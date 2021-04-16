@@ -25,6 +25,9 @@ client.connect((err) => {
   const serviceCollection = client
     .db("eventPhotographer")
     .collection("services");
+  const bookingCollection = client
+    .db("eventPhotographer")
+    .collection("bookings");
 
   app.post("/addService", (req, res) => {
     const newService = req.body;
@@ -47,6 +50,14 @@ client.connect((err) => {
       .toArray((err, documents) => {
         res.send(documents[0]);
       });
+  });
+
+  app.post("/addBooking", (req, res) => {
+    const newService = req.body;
+    bookingCollection.insertOne(newService).then((result) => {
+      console.log("inserted count", result.insertedCount);
+      res.send(result.insertedCount > 0);
+    });
   });
 
   console.log("db connected successfully");
