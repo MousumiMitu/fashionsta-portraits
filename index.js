@@ -112,6 +112,12 @@ client.connect((err) => {
     });
   });
 
+  app.get("/reviews", (req, res) => {
+    reviewCollection.find({}).toArray((err, documents) => {
+      res.send(documents);
+    });
+  });
+
   console.log("db connected successfully");
 });
 
