@@ -30,6 +30,7 @@ client.connect((err) => {
     .db("eventPhotographer")
     .collection("bookings");
   const adminCollection = client.db("eventPhotographer").collection("admin");
+  const reviewCollection = client.db("eventPhotographer").collection("reviews");
 
   app.post("/addService", (req, res) => {
     const newService = req.body;
@@ -99,6 +100,15 @@ client.connect((err) => {
     const email = req.body.email;
     adminCollection.find({ email: email }).toArray((err, admins) => {
       res.send(admins.length > 0);
+    });
+  });
+
+  app.post("/addReview", (req, res) => {
+    const newReview = req.body;
+
+    reviewCollection.insertOne(newReview).then((result) => {
+      console.log("inserted count", result.insertedCount);
+      res.send(result.insertedCount > 0);
     });
   });
 
