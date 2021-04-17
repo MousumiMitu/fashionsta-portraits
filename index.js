@@ -9,6 +9,7 @@ const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster
 const app = express();
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
 const port = 5000;
@@ -28,6 +29,7 @@ client.connect((err) => {
   const bookingCollection = client
     .db("eventPhotographer")
     .collection("bookings");
+  const adminCollection = client.db("eventPhotographer").collection("admin");
 
   app.post("/addService", (req, res) => {
     const newService = req.body;
@@ -44,6 +46,14 @@ client.connect((err) => {
     });
   });
 
+  app.delete("/delete/:id", (req, res) => {
+    serviceCollection
+      .deleteOne({ _id: ObjectId(req.params.id) })
+      .then((result) => {
+        console.log(result);
+      });
+  });
+
   app.get("/service/:id", (req, res) => {
     serviceCollection
       .find({ _id: ObjectId(req.params.id) })
@@ -57,6 +67,38 @@ client.connect((err) => {
     bookingCollection.insertOne(newService).then((result) => {
       console.log("inserted count", result.insertedCount);
       res.send(result.insertedCount > 0);
+    });
+  });
+
+  app.post("/bookingAppointments", (req, res) => {
+    const email = req.body.email;
+
+    adminCollection.find({ email }).toArray((err, admins) => {
+      if (admins.length === 0) {
+        bookingCollection.find({ email: email }).toArray((err, documents) => {
+          res.send(documents);
+        });
+      } else {
+        bookingCollection.find({}).toArray((err, documents) => {
+          res.send(documents);
+        });
+      }
+    });
+  });
+
+  app.post("/addAdmin", (req, res) => {
+    const newAdmin = req.body;
+    console.log(newAdmin);
+    adminCollection.insertOne(newAdmin).then((result) => {
+      console.log("inserted count", result.insertedCount);
+      res.send(result.insertedCount > 0);
+    });
+  });
+
+  app.post("/checkAdmin", (req, res) => {
+    const email = req.body.email;
+    adminCollection.find({ email: email }).toArray((err, admins) => {
+      res.send(admins.length > 0);
     });
   });
 
