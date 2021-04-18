@@ -55,6 +55,19 @@ client.connect((err) => {
       });
   });
 
+  app.patch("/update/:id", (req, res) => {
+    bookingCollection
+      .updateOne(
+        { _id: ObjectId(req.params.id) },
+        {
+          $set: { status: req.body.status },
+        }
+      )
+      .then((result) => {
+        console.log(result);
+      });
+  });
+
   app.get("/service/:id", (req, res) => {
     serviceCollection
       .find({ _id: ObjectId(req.params.id) })
