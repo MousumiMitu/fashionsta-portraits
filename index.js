@@ -124,7 +124,7 @@ client.connect((err) => {
 
   app.post("/addReview", (req, res) => {
     const newReview = req.body;
-    console.log(newReview);
+
     reviewCollection.insertOne(newReview).then((result) => {
       console.log("inserted count", result.insertedCount);
       res.send(result.insertedCount > 0);
