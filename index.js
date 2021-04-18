@@ -87,6 +87,12 @@ client.connect((err) => {
     });
   });
 
+  app.get("/bookingCollection", (req, res) => {
+    bookingCollection.find({}).toArray((err, documents) => {
+      res.send(documents);
+    });
+  });
+
   app.post("/addAdmin", (req, res) => {
     const newAdmin = req.body;
     console.log(newAdmin);
